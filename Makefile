@@ -1,27 +1,37 @@
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU Library General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA02111-1307, USA.
+# Makefile для sc2v (исправленный для современных GCC)
 
+CC = gcc
 LEX = flex
-all:
-	cd src; make all
+YACC = bison -y
 
-test: 
-	cd src; make all
-	cd examples; ../bin/sc2v.sh subbytes;../bin/sc2v.sh sc_ex1; ../bin/sc2v.sh dummy1; ../bin/sc2v.sh dummy2 ;../bin/sc2v.sh delay_line; ../bin/sc2v.sh stmach_k;../bin/sc2v.sh rng; ../bin/sc2v.sh md5; ../bin/sc2v.sh half_adder; ../bin/sc2v.sh full_adder; echo ""; echo "sc2v translated the following files successfully"; echo ""; ls -l *.v 
+CFLAGS = -std=gnu89 -m32 -fcommon \
+-Wno-implicit-int \
+-Wno-implicit-function-declaration \
+-Wno-pointer-to-int-cast \
+-Wno-int-to-pointer-cast
 
-docs:
-	cd src; doxygen doxygen.cfg 
+BIN = ../bin
+
+all: step1 step2 step3
+
+step1:
+	$(LEX) sc2v_step1.l
+	$(YACC) -d sc2v_step1.y
+	$(CC) $(CFLAGS) lex.yy.c y.tab.c sc2v_step1.c global_vars.c -Isrc -o $(BIN)/sc2v_step1 -lm
+
+step2:
+	$(LEX) sc2v_step2.l
+	$(YACC) -d sc2v_step2.y
+	$(CC) $(CFLAGS) lex.yy.c y.tab.c sc2v_step2.c global_vars.c -Isrc -o $(BIN)/sc2v_step2 -lm
+
+step3:
+	$(LEX) sc2v_step3.l
+	$(YACC) -d sc2v_step3.y
+	$(CC) $(CFLAGS) lex.yy.c y.tab.c sc2v_step3.c global_vars.c -Isrc -o $(BIN)/sc2v_step3 -lm
 
 clean:
-	\rm -r docs; cd src; make clean; cd ../examples/; rm -rf *.v
+	rm -f lex.yy.c y.tab.c y.tab.h
+	rm -f *.o
+	rm -f $(BIN)/sc2v_step1
+	rm -f $(BIN)/sc2v_step2
+	rm -f $(BIN)/sc2v_step3

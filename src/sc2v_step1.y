@@ -23,6 +23,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "sglib.h"
 #include "sc2v_step1.h"
 
@@ -78,12 +79,12 @@
     fprintf (stderr, "line: %d error: %s\n", lineno, str);
   }
 
-  int yywrap ()
+  int yywrap (void)
   {
     return 1;
   }
 
-  main ()
+  main (void)
   {
     int i;
 

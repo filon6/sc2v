@@ -1,40 +1,32 @@
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU Library General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-#
-# Cygwin
-#
-LEX = flex 
+LEX = flex
 YACC = bison -y
-#
-# Linux
-#
-#LEX = lex 
-#YACC = yacc 
 
-all:
+CFLAGS = -std=gnu89 -m32 -fcommon \
+-Wno-implicit-int \
+-Wno-implicit-function-declaration \
+-Wno-pointer-to-int-cast \
+-Wno-int-to-pointer-cast
+
+all: step1 step2 step3
+
+step1:
 	$(LEX) sc2v_step1.l
 	$(YACC) -d sc2v_step1.y
-	gcc lex.yy.c y.tab.c sc2v_step1.c -Isrc -o ../bin/sc2v_step1 -lm
+	gcc $(CFLAGS) lex.yy.c y.tab.c sc2v_step1.c global_vars.c -Isrc -o ../bin/sc2v_step1 -lm
 
+step2:
 	$(LEX) sc2v_step2.l
-	$(YACC) -d sc2v_step2.y 
-	gcc lex.yy.c y.tab.c sc2v_step2.c -Isrc -o ../bin/sc2v_step2 -lm
+	$(YACC) -d sc2v_step2.y
+	gcc $(CFLAGS) lex.yy.c y.tab.c sc2v_step2.c global_vars.c -Isrc -o ../bin/sc2v_step2 -lm
 
+step3:
 	$(LEX) sc2v_step3.l
 	$(YACC) -d sc2v_step3.y
-	gcc lex.yy.c y.tab.c -Isrc -o ../bin/sc2v_step3 -lm
+	gcc $(CFLAGS) lex.yy.c y.tab.c global_vars.c -Isrc -o ../bin/sc2v_step3 -lm
 
 clean:
-	rm -rf lex.* y.* *.o ../bin/sc2v_step2* ../bin/sc2v_step1* ../bin/sc2v_step3*
+	rm -f lex.yy.c y.tab.c y.tab.h
+	rm -f *.o
+	rm -f ../bin/sc2v_step1
+	rm -f ../bin/sc2v_step2
+	rm -f ../bin/sc2v_step3
