@@ -50,7 +50,7 @@ sudo apt install flex bison build-essential
 Клонировать репозиторий и собрать проект:
 
 ```bash
-git clone https://github.com/<ваш-username>/sc2v.git
+git clone https://github.com/filon6/sc2v.git
 cd sc2v/src
 make clean
 make
